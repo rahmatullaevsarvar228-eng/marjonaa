@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Marjona uchun</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=Caveat:wght@500;700&display=swap');
+
+  :root{
+    --cream:#FFF6F3;
+    --cream-deep:#FDE9E4;
+    --paper:#FFFDFB;
+    --rose:#F0A6AE;
+    --rose-deep:#E0798A;
+    --rose-deeper:#C85F72;
+    --plum:#5B3B49;
+    --plum-soft:#8A6572;
+    --gold:#E3B074;
+    --gold-soft:#F6DDBE;
+    --shadow: 0 20px 45px rgba(224,121,138,0.18);
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--cream);
+    color:var(--plum);
+    font-family:'Lora', serif;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- decorative background ---------- */
+  .bg-texture{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(227,176,116,0.14), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(224,121,138,0.16), transparent 45%);
+  }
+
+  .floaties{ position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+  .floaties span{
+    position:absolute;
+    bottom:-40px;
+    font-size:1.1rem;
+    color:var(--rose);
+    opacity:.35;
+    animation:floatUp linear infinite;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    10%{ opacity:.4; }
+    90%{ opacity:.25; }
+    100%{ transform:translateY(-110vh) rotate(25deg); opacity:0; }
+  }
+
+  /* ================= COVER ================= */
+  #cover{
+    position:fixed; inset:0; z-index:10;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:8vw;
+    background:
+      radial-gradient(circle at 50% 15%, var(--cream-deep), var(--cream) 65%);
+    transition:opacity .9s ease, visibility .9s ease;
+  }
+  #cover.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .cover-ornament{
+    width:50px; height:50px; margin-bottom:20px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.6rem;
+    animation:pulseHeart 2.2s ease-in-out infinite;
+  }
+  @keyframes pulseHeart{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.15); }
+  }
+
+  .cover-eyebrow{
+    font-family:'Caveat', cursive;
+    font-size:1.5rem;
+    color:var(--rose-deeper);
+    letter-spacing:.5px;
+    margin-bottom:6px;
+  }
+  .cover h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-style:italic;
+    font-size:clamp(2.2rem, 9vw, 3.4rem);
+    line-height:1.15;
+    margin:0 0 14px;
+    color:var(--plum);
+  }
+  .cover p.sub{
+    font-size:1rem;
+    color:var(--plum-soft);
+    max-width:320px;
+    line-height:1.6;
+    margin:0 0 40px;
+  }
+
+  #openBtn{
+    font-family:'Lora', serif;
+    font-size:.95rem;
+    letter-spacing:.06em;
+    color:var(--paper);
+    background:linear-gradient(135deg, var(--rose-deeper), var(--rose));
+    border:none;
+    padding:16px 38px;
+    border-radius:40px;
+    cursor:pointer;
+    box-shadow: var(--shadow);
+    display:flex; align-items:center; gap:10px;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  #openBtn:active{ transform:scale(0.96); }
+  #openBtn svg{ width:16px; height:16px; }
+
+  .cover-footnote{
+    position:absolute; bottom:26px;
+    font-family:'Caveat', cursive;
+    font-size:1.1rem;
+    color:var(--plum-soft);
+    opacity:.8;
+  }
+
+  /* ================= BOOK ================= */
+  #book{
+    position:fixed; inset:0; z-index:5;
+    opacity:0; visibility:hidden;
+    transition:opacity .8s ease .1s;
+  }
+  #book.show{ opacity:1; visibility:visible; }
+
+  .progress{
+    position:absolute; top:0; left:0; right:0;
+    display:flex; justify-content:center; gap:8px;
+    padding:16px 0 10px;
+    z-index:6;
+  }
+  .progress .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--gold-soft);
+    transition:all .35s ease;
+  }
+  .progress .dot.active{
+    background:var(--rose-deeper);
+    width:20px; border-radius:5px;
+  }
+
+  .pages{
+    position:absolute; inset:0;
+    display:flex;
+    width:500%;
+    height:100%;
+    transition:transform .65s cubic-bezier(.65,0,.35,1);
+    will-change:transform;
+    z-index:2;
+  }
+
+  .page{
+    width:20%;
+    height:100%;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:64px 22px 90px;
+    position:relative;
+    overflow-y:auto;
+  }
+  .page::-webkit-scrollbar{ display:none; }
+
+  /* alternating warm page backgrounds */
+  .page[data-i="0"]{ background:radial-gradient(circle at 30% 10%, var(--cream-deep), var(--cream) 60%); }
+  .page[data-i="1"]{ background:radial-gradient(circle at 70% 10%, #FCEAE0, var(--cream) 60%); }
+  .page[data-i="2"]{ background:radial-gradient(circle at 30% 90%, #FDEEE7, var(--cream) 60%); }
+  .page[data-i="3"]{ background:radial-gradient(circle at 70% 90%, #FBE5DC, var(--cream) 60%); }
+  .page[data-i="4"]{ background:radial-gradient(circle at 50% 50%, var(--cream-deep), var(--cream) 70%); }
+
+  .ribbon{
+    position:absolute; top:14px; right:18px;
+    background:var(--rose-deeper);
+    color:var(--paper);
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:.95rem;
+    padding:8px 16px;
+    border-radius:20px;
+    box-shadow:0 6px 14px rgba(200,95,114,.35);
+    letter-spacing:.05em;
+  }
+
+  .page-inner{
+    max-width:420px;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-top:10px;
+    position:relative;
+    z-index:3;
+  }
+
+  .polaroid{
+    background:var(--paper);
+    padding:14px 14px 46px;
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    width:78%;
+    max-width:270px;
+    margin-bottom:26px;
+    position:relative;
+  }
+  .page[data-i="0"] .polaroid{ transform:rotate(-3deg); }
+  .page[data-i="1"] .polaroid{ transform:rotate(2.2deg); }
+  .page[data-i="2"] .polaroid{ transform:rotate(-2deg); }
+  .page[data-i="3"] .polaroid{ transform:rotate(3deg); }
+
+  .tape{
+    position:absolute;
+    width:46px; height:20px;
+    background:rgba(240,166,174,0.55);
+    box-shadow:0 2px 4px rgba(0,0,0,0.06);
+  }
+  .tape.tl{ top:-10px; left:-14px; transform:rotate(-40deg); }
+  .tape.tr{ top:-10px; right:-14px; transform:rotate(40deg); }
+
+  .polaroid img{
+    width:100%;
+    height:280px;
+    object-fit:cover;
+    display:block;
+    border-radius:6px;
+    background:var(--cream-deep);
+  }
+  .polaroid .cap{
+    font-family:'Caveat', cursive;
+    font-size:1.25rem;
+    color:var(--rose-deeper);
+    text-align:center;
+    margin-top:10px;
+  }
+
+  .chapter-title{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:1.55rem;
+    color:var(--rose-deeper);
+    margin:0 0 4px;
+    text-align:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .chapter-title .heart-ico{ font-size:1.1rem; }
+  .chapter-number{
+    font-family:'Lora', serif;
+    font-size:.72rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+
+  .story{
+    font-size:1rem;
+    line-height:1.85;
+    color:var(--plum);
+    text-align:left;
+    padding:0 4px;
+  }
+  .story::first-letter{
+    font-family:'Cormorant Garamond', serif;
+    font-size:2.6rem;
+    font-weight:600;
+    color:var(--rose-deeper);
+    float:left;
+    line-height:.8;
+    margin:6px 6px 0 0;
+  }
+
+  /* closing page */
+  .closing-heart{
+    font-size:2.4rem;
+    margin-bottom:14px;
+    color:var(--rose-deeper);
+    animation:pulseHeart 2.2s ease-in-out infinite;
+  }
+  .closing-title{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:1.9rem;
+    color:var(--plum);
+    margin:0 0 18px;
+    text-align:center;
+  }
+  .closing-text{
+    font-family:'Caveat', cursive;
+    font-size:1.5rem;
+    line-height:1.7;
+    color:var(--plum-soft);
+    text-align:center;
+    max-width:320px;
+  }
+  .replay{
+    margin-top:30px;
+    background:none;
+    border:1.5px solid var(--rose-deeper);
+    color:var(--rose-deeper);
+    padding:12px 28px;
+    border-radius:30px;
+    font-family:'Lora', serif;
+    font-size:.85rem;
+    letter-spacing:.05em;
+    cursor:pointer;
+  }
+
+  /* nav arrows */
+  .nav-btn{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:42px; height:42px;
+    border-radius:50%;
+    background:rgba(255,253,251,0.9);
+    box-shadow:var(--shadow);
+    border:none;
+    display:flex; align-items:center; justify-content:center;
+    z-index:7;
+    cursor:pointer;
+    color:var(--rose-deeper);
+    transition:opacity .3s ease, transform .2s ease;
+  }
+  .nav-btn:active{ transform:translateY(-50%) scale(0.92); }
+  .nav-btn.prev{ left:14px; }
+  .nav-btn.next{ right:14px; }
+  .nav-btn[disabled]{ opacity:0; pointer-events:none; }
+  .nav-btn svg{ width:18px; height:18px; }
+
+  .music-toggle{
+    position:absolute; bottom:22px; right:18px;
+    z-index:7;
+    width:38px; height:38px;
+    border-radius:50%;
+    background:rgba(255,253,251,0.9);
+    box-shadow:var(--shadow);
+    border:none;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--rose-deeper);
+    cursor:pointer;
+  }
+  .music-toggle svg{ width:16px; height:16px; }
+
+  @media (min-width:600px){
+    .story{ font-size:1.05rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-texture"></div>
+<div class="floaties" id="floaties"></div>
+
+<!-- ================= COVER ================= -->
+<div id="cover">
+  <div class="cover-ornament">💗</div>
+  <div class="cover-eyebrow">siz uchun</div>
+  <h1>To'rt lahza,<br>bitta yurak</h1>
+  <p class="sub">Bir kunning to'rt sahifasi — oy bilan suhbatdan tortib, bozordagi kulgilargacha. Ochib ko'ring.</p>
+  <button id="openBtn">
+    Kitobni ochish
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+  <div class="cover-footnote">ovoz bilan o'qish tavsiya etiladi 🎵</div>
+</div>
+
+<!-- ================= BOOK ================= -->
+<div id="book">
+  <div class="progress" id="progress"></div>
+
+  <button class="nav-btn prev" id="prevBtn" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>
+  </button>
+  <button class="nav-btn next" id="nextBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+
+  <div class="pages" id="pages">
+
+    <!-- PAGE 1 -->
+    <section class="page" data-i="0">
+      <div class="ribbon">I</div>
+      <div class="page-inner">
+        <div class="polaroid">
+          <div class="tape tl"></div><div class="tape tr"></div>
+          <img src="1.jpg" alt="Marjona ko'chada, oyga qarab">
+          <div class="cap">oy bilan yolg'iz suhbat</div>
+        </div>
+        <div class="chapter-number">Birinchi sahifa</div>
+        <h2 class="chapter-title"><span class="heart-ico">🌙</span>Oy bilan suhbat</h2>
+        <p class="story">Ko'cha chiroqlari allaqachon uyquga ketgan, osmon esa keng va sokin edi. Siz boshingizni ko'tarib oyga tikildingiz — u sabrli, hech qachon shoshilmaydigan bir tinglovchidek edi. "Nega dunyo shunday?" — dedingiz ichingizda. "Nega ba'zi savollarning javobi yo'q, nega ba'zi kunlar bunchalik og'ir?" Savollar bir-birining ketidan kelaverdi, ammo javob kelmadi. Shamol yengilgina esib, sochingizni silab o'tdi — xuddi kimdir "hammasi yaxshi bo'ladi" deyayotgandek. Va aynan shu daqiqada angladingiz: ba'zan javob topish shart emas ekan. Ba'zan faqat savol berish, tinglanish, va tunning sirli sukunatida o'zingiz bilan yolg'iz qolish ham yetarli ekan. Oy sizga jilmayganday tuyuldi — go'yo ming yillar davomida boshqalarning ham xuddi shunday savollarini tinglagan va hech qachon zerikmagan. Chuqur nafas oldingiz, yulduzlar esa xuddi siz uchun yonayotgandek porladi. Va o'sha kecha lablaringizda sekin, iliq bir tabassum paydo bo'ldi — chunki endi o'zingizni yolg'iz his qilmadingiz, go'yo butun osmon sizni quchoqlagandek edi.</p>
+      </div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section class="page" data-i="1">
+      <div class="ribbon">II</div>
+      <div class="page-inner">
+        <div class="polaroid">
+          <div class="tape tl"></div><div class="tape tr"></div>
+          <img src="2.jpg" alt="Marjona uyda, karavotda">
+          <div class="cap">uyqu kelmagan tun</div>
+        </div>
+        <div class="chapter-number">Ikkinchi sahifa</div>
+        <h2 class="chapter-title"><span class="heart-ico">🌸</span>Uyqu kelmagan tun</h2>
+        <p class="story">Ko'chadan qaytib, yumshoq to'shagingizga cho'zildingiz. Tanangiz charchagan edi, lekin xayolingiz hamon tinmasdi — kunning har bir lahzasi, har bir kulgi, har bir gap ko'z oldingizdan qayta-qayta o'tardi. Ko'zlaringizni yumdingiz, ammo uyqu kelavermadi. Shunda, kutilmaganda, eng yorqin xotiralar bittalab kela boshladi: onangizning mehr to'la ovozi, jiyaningizning sharaqlab kulishi, do'stlaringizning beg'ubor hazillari. Har bir xotira xuddi issiq bir piyola choydek, ichingizni asta-asta isitib bordi. O'sha zahoti angladingiz — hayot og'ir savollardan iborat bo'lishi mumkin, ammo shu bilan birga sizni sevadigan odamlarning iliqligi ham bor, va bu iliqlik hech qachon sizni tark etmaydi. Bu tuyg'u yostiqqa singib, ko'z qovoqlaringizni sekin-asta og'irlashtirdi. Nihoyat, bugungi tashvishlar bir-bir orqaga chekindi, yurak esa xotirjamlik va shukronalikka to'ldi. Lablaringizda allaqachon mayin bir tabassum bor edi — xayolingizda yaqinlaringiz bilan birga edingiz, va bu qalbingiz uchun butun dunyodan ham qimmatliroq edi. Shu tabassum bilan asta uyquga ketdingiz, go'yo ertangi kun sizga yangi bir mo''jiza va'da qilayotgandek.</p>
+      </div>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section class="page" data-i="2">
+      <div class="ribbon">III</div>
+      <div class="page-inner">
+        <div class="polaroid">
+          <div class="tape tl"></div><div class="tape tr"></div>
+          <img src="3.jpg" alt="Marjona opasi va jiyani bilan">
+          <div class="cap">oilaviy iliqlik</div>
+        </div>
+        <div class="chapter-number">Uchinchi sahifa</div>
+        <h2 class="chapter-title"><span class="heart-ico">🏡</span>Oilaviy iliqlik</h2>
+        <p class="story">Ertasi kuni siz opangiznikiga yo'l oldingiz. Eshikni ochib kirishingiz bilanoq, kichkina jiyaningiz quvonchdan sakrab oldingizga yugurib keldi, qo'lida rang-barang o'yinchoqlari bilan. "Xola keldi!" — deb baqirib yubordi bola, va butun uy bir zumda kulgu va shodlikka to'ldi. Opangiz bilan divanga yonma-yon o'tirdingiz, choy damlandi, gaplar esa hech tugamadi — orzular haqida, kichik-kichik quvonchlar haqida, yurakning eng nozik burchaklarida yashiringan tuyg'ular haqida. Shu orada jiyaningiz oyoqlaringiz yonida o'zining kichkina, ajoyib dunyosini qurardi, tinimsiz savollar yog'dirardi: "Xola, bu nima? Buni nega bunday deydilar?" Yuragingiz iliqlikka to'lib-toshdi — bu shunchaki oddiy kun emas, balki hayotning eng qimmatli, eng shirin lahzalaridan biri edi. Opangizning yumshoq kulgisi, jiyaningizning begunoh, jarangdor ovozi, choyning issiq bug'i — hammasi birlashib, sizga bir haqiqatni his qildirdi: qayerga borsangiz ham, qanchalik uzoqda yursangiz ham, ildizlaringiz va oilangiz doim shu yerda, ochiq quchoq bilan sizni kutib turadi. Ko'zlaringizga beixtiyor yosh yig'ildi, tomog'ingiz achishdi — ammo bu og'riq emas edi, bu to'lib-toshgan, iliq baxtning yoshi edi, va siz o'zingiz sezmagan holda jilmayib yubordingiz.</p>
+      </div>
+    </section>
+
+    <!-- PAGE 4 -->
+    <section class="page" data-i="3">
+      <div class="ribbon">IV</div>
+      <div class="page-inner">
+        <div class="polaroid">
+          <div class="tape tl"></div><div class="tape tr"></div>
+          <img src="4.png" alt="Marjona do'stlari bilan bozorda">
+          <div class="cap">bozor kulgilari</div>
+        </div>
+        <div class="chapter-number">To'rtinchi sahifa</div>
+        <h2 class="chapter-title"><span class="heart-ico">🎈</span>Bozor kulgilari</h2>
+        <p class="story">Kunning oxirida do'stlaringiz bilan bozorga chiqdingiz. Rang-barang patnislar, sotuvchilarning quvnoq ovozi, hidlar aralashgan iliq havo — hammasi bayramona bir kayfiyat yaratardi. Har bir do'kon oldida to'xtab, kulgidan ich ketguncha hazillashdingiz, arzon-garov, yorqin taqinchoqlarni sinab ko'rdingiz, va hech narsaga arzimaydigan mayda gaplardan to'satdan baxtli bo'lib qoldingiz. Bir payt do'stlaringizdan biri kulib shunday dedi: "Qarang, siz oxirgi marta qachon shunchalik erkin kulgan edingiz?" Bir zum jim qoldingiz — va tushundingizki, chindan ham ancha vaqtdan beri shunday sodda, beg'ubor xursandchilikni his qilmagan ekansiz. Quyosh sekin-asta botayotgan mahal, do'stlaringizning quvnoq kulgilari, iliq shabada va shirin-shirin hidlar orasida, ko'zlaringizga to'satdan yosh keldi — lekin bu safar g'am yoshi emas edi, bu baxtdan to'lib-toshgan, hayajondan titrayotgan yurakning yoshi edi. Kulib turib, ayni damda yig'lab ham yubordingiz, va aynan shu qarama-qarshi tuyg'ular ichida tushundingiz: baxt har doim katta voqealarda emas — u ba'zan shunchaki, quyosh nurida, yaqin do'stlar bilan bozorda kulgan bir kunning ichiga yashiringan bo'ladi. Va bugun, aynan shu lahzada, siz haqiqatan ham, to'liq va cheksiz baxtli edingiz.</p>
+      </div>
+    </section>
+
+    <!-- PAGE 5 - CLOSING -->
+    <section class="page" data-i="4">
+      <div class="page-inner">
+        <div class="closing-heart">♡</div>
+        <h2 class="closing-title">Marjonaga</h2>
+        <p class="closing-text">Bu kitob — sizning kunlaringiz,<br>tunlaringiz, savollaringiz<br>va kulgilaringiz uchun.<br><br>Yulduzlar ostida ham,<br>oilangiz bag'rida ham,<br>do'stlaringiz orasida ham —<br><br>tabassumingiz doim shunday<br>yorqin bo'lib qolsin.</p>
+        <button class="replay" id="replayBtn">Boshidan o'qish</button>
+      </div>
+    </section>
+
+  </div>
+
+  <button class="music-toggle" id="musicBtn">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </button>
+</div>
+
+<audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
+
+<script>
+  const cover = document.getElementById('cover');
+  const book = document.getElementById('book');
+  const pages = document.getElementById('pages');
+  const openBtn = document.getElementById('openBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const replayBtn = document.getElementById('replayBtn');
+  const musicBtn = document.getElementById('musicBtn');
+  const music = document.getElementById('bgMusic');
+  const progress = document.getElementById('progress');
+  const floaties = document.getElementById('floaties');
+
+  const TOTAL = 5;
+  let current = 0;
+
+  for(let i=0;i<TOTAL;i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' active' : '');
+    progress.appendChild(d);
+  }
+
+  const heartEmojis = ['💗','🌸','✨','♡'];
+  for(let i=0;i<12;i++){
+    const s = document.createElement('span');
+    s.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+    s.style.left = Math.random()*100 + '%';
+    s.style.animationDuration = (10 + Math.random()*10) + 's';
+    s.style.animationDelay = (Math.random()*10) + 's';
+    s.style.fontSize = (0.8 + Math.random()*0.9) + 'rem';
+    floaties.appendChild(s);
+  }
+
+  function render(){
+    pages.style.transform = `translateX(-${current * 20}%)`;
+    [...progress.children].forEach((d,i)=> d.classList.toggle('active', i===current));
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === TOTAL - 1;
+  }
+
+  function goTo(i){
+    current = Math.max(0, Math.min(TOTAL-1, i));
+    render();
+  }
+
+  openBtn.addEventListener('click', ()=>{
+    cover.classList.add('hide');
+    book.classList.add('show');
+    music.play().catch(()=>{ /* autoplay tiqilib qolsa, foydalanuvchi musiqa tugmasini bosadi */ });
+    render();
+  });
+
+  nextBtn.addEventListener('click', ()=> goTo(current+1));
+  prevBtn.addEventListener('click', ()=> goTo(current-1));
+  replayBtn.addEventListener('click', ()=> goTo(0));
+
+  musicBtn.addEventListener('click', ()=>{
+    if(music.paused){ music.play(); musicBtn.style.opacity = 1; }
+    else { music.pause(); musicBtn.style.opacity = .45; }
+  });
+
+  // swipe support
+  let touchX = null;
+  pages.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+  pages.addEventListener('touchend', e => {
+    if(touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 50){
+      if(dx < 0) goTo(current+1);
+      else goTo(current-1);
+    }
+    touchX = null;
+  });
+
+  // keyboard support (desktop preview)
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'ArrowRight') goTo(current+1);
+    if(e.key === 'ArrowLeft') goTo(current-1);
+  });
+</script>
+
+</body>
+</html>
