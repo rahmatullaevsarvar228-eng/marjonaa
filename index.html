@@ -209,8 +209,8 @@
     padding:14px 14px 46px;
     border-radius:10px;
     box-shadow:var(--shadow);
-    width:78%;
-    max-width:270px;
+    width:92%;
+    max-width:340px;
     margin-bottom:26px;
     position:relative;
   }
@@ -231,11 +231,38 @@
   .polaroid img{
     width:100%;
     height:auto;
-    max-height:60vh;
+    min-height:220px;
+    max-height:65vh;
     object-fit:contain;
     display:block;
     border-radius:6px;
     background:var(--cream-deep);
+    cursor:zoom-in;
+  }
+
+  /* ---------- lightbox ---------- */
+  .lightbox{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(69,40,48,0.92);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden;
+    transition:opacity .3s ease, visibility .3s ease;
+    padding:24px;
+  }
+  .lightbox.show{ opacity:1; visibility:visible; }
+  .lightbox img{
+    max-width:100%;
+    max-height:100%;
+    border-radius:10px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .lightbox-hint{
+    position:absolute; bottom:30px; left:0; right:0;
+    text-align:center;
+    color:var(--cream);
+    font-family:'Caveat', cursive;
+    font-size:1.2rem;
+    opacity:.85;
   }
   .polaroid .cap{
     font-family:'Caveat', cursive;
@@ -325,22 +352,27 @@
   /* nav arrows */
   .nav-btn{
     position:absolute; top:50%; transform:translateY(-50%);
-    width:42px; height:42px;
+    width:52px; height:52px;
     border-radius:50%;
-    background:rgba(255,253,251,0.9);
-    box-shadow:var(--shadow);
-    border:none;
+    background:linear-gradient(135deg, var(--rose-deeper), var(--rose));
+    box-shadow:0 10px 24px rgba(200,95,114,.45);
+    border:2px solid var(--paper);
     display:flex; align-items:center; justify-content:center;
     z-index:7;
     cursor:pointer;
-    color:var(--rose-deeper);
+    color:var(--paper);
     transition:opacity .3s ease, transform .2s ease;
+    animation:navPulse 2.4s ease-in-out infinite;
   }
-  .nav-btn:active{ transform:translateY(-50%) scale(0.92); }
-  .nav-btn.prev{ left:14px; }
-  .nav-btn.next{ right:14px; }
-  .nav-btn[disabled]{ opacity:0; pointer-events:none; }
-  .nav-btn svg{ width:18px; height:18px; }
+  .nav-btn:active{ transform:translateY(-50%) scale(0.9); }
+  .nav-btn.prev{ left:12px; }
+  .nav-btn.next{ right:12px; }
+  .nav-btn[disabled]{ opacity:0; pointer-events:none; animation:none; }
+  .nav-btn svg{ width:22px; height:22px; }
+  @keyframes navPulse{
+    0%,100%{ box-shadow:0 10px 24px rgba(200,95,114,.45); }
+    50%{ box-shadow:0 10px 30px rgba(200,95,114,.7), 0 0 0 6px rgba(224,121,138,.18); }
+  }
 
   .music-toggle{
     position:absolute; bottom:22px; right:18px;
@@ -471,6 +503,11 @@
 
 <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
 
+<div class="lightbox" id="lightbox">
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-hint">yopish uchun bosing</div>
+</div>
+
 <script>
   const cover = document.getElementById('cover');
   const book = document.getElementById('book');
@@ -544,6 +581,17 @@
     }
     touchX = null;
   });
+
+  // lightbox: tap a photo to see it fully, tap again to close
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  document.querySelectorAll('.polaroid img').forEach(img=>{
+    img.addEventListener('click', ()=>{
+      lightboxImg.src = img.src;
+      lightbox.classList.add('show');
+    });
+  });
+  lightbox.addEventListener('click', ()=> lightbox.classList.remove('show'));
 
   // keyboard support (desktop preview)
   document.addEventListener('keydown', e=>{
